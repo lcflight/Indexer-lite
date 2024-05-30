@@ -2,9 +2,14 @@
   "name": "indexer-lite",
   "version": "1.0.0",
   "description": "Never loose your files amongst 10s of hard drives again!",
-  "main": "index.js",
+  "main": "script.js",
   "scripts": {
-    "test": "vitest"
+    "test": "vitest",
+    "start": "pm2 start script.ts --interpreter ts-node --watch",
+    "start:test": "pm2 start test.ts --interpreter ts-node --watch --no-autorestart",
+    "stop": "pm2 stop script.ts",
+    "kill": "pm2 kill",
+    "write": "tsx writeIndex.ts"
   },
   "repository": {
     "type": "git",
@@ -22,9 +27,13 @@
   "dependencies": {
     "@types/fs-extra": "^11.0.4",
     "fs-extra": "^11.2.0",
+    "klaw": "^4.1.0",
     "node-notifier": "^10.0.1"
   },
   "devDependencies": {
-    "@types/node": "^20.12.13"
+    "@types/klaw": "^3.0.6",
+    "@types/node": "^20.12.13",
+    "@types/node-notifier": "^8.0.5",
+    "tsx": "^4.11.0"
   }
 }
