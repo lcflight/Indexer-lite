@@ -1,0 +1,30 @@
+{
+  "name": "indexer-lite",
+  "version": "1.0.0",
+  "description": "Never loose your files amongst 10s of hard drives again!",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lcflight/Indexer-lite.git"
+  },
+  "keywords": [
+    "productivity"
+  ],
+  "author": "Luke Arthur",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lcflight/Indexer-lite/issues"
+  },
+  "homepage": "https://github.com/lcflight/Indexer-lite#readme",
+  "dependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "fs-extra": "^11.2.0",
+    "node-notifier": "^10.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.13"
+  }
+}
