@@ -4,28 +4,28 @@ This is a highly simplified script to prove the viability of a hard drive watchi
 
 # Getting Started
 
-    - Install pm2 globally
-    ```npm i -g pm2```
+1. Install pm2 globally
+   `npm i -g pm2`
 
-    - Install project dependencies
-    ```npm i```
+2. Install project dependencies
+   `npm i`
 
-    - Copy run.sh to /LocalDrive/Library/Scripts/DriveIndexer/run.sh
+3. Copy run.sh to /LocalDrive/Library/Scripts/DriveIndexer/run.sh
 
-    - Copy com.arthur.DriveIndexer.plist to /LocalDrive/Library/LaunchAgents/com.arthur.DriveIndexer.plist
+4. Copy com.arthur.DriveIndexer.plist to /LocalDrive/Library/LaunchAgents/com.arthur.DriveIndexer.plist
 
 By default DriveIndexer stores index files to a folder on the desktop in a folder called 'DriveIndexer'. To update to a custom directory update script.ts lines 9-14. Also update the route referances in .zshrc.sample
 
-    - In terminal run
-        ```cd ~```
-        ```nano ~/.zshrc```
+5. In terminal run
+   `cd ~`
+   `nano ~/.zshrc`
 
-    - Paste the contents of '.zshrc.sample' to the bottom of the file
+6. Paste the contents of '.zshrc.sample' to the bottom of the file
 
-    - Press 'CMD + X' then 'Y', then 'Enter'
+7. Press 'CMD + X' then 'Y', then 'Enter'
 
-    - In terminal run
-        ```source ~/.zshrc```
+8. In terminal run
+   `source ~/.zshrc`
 
 Thats it! You are good to go! Just Restart your computer and Drive should begin indexing auto matically!
 There may be some issues with permissions to sort out with i do not feel qualified to explain at this point.
