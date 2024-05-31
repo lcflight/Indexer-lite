@@ -14,28 +14,34 @@ This is a highly simplified script to prove the viability of a hard drive watchi
    Run the following command in your terminal:
    `npm i`
 
-3. **Copy run.sh**
+3. **Build Project**
+
+   Run the Following command in your terminal:
+   `npm run build`
+
+4. **Copy run.sh**
 
    Copy `run.sh` to `/LocalDrive/Library/Scripts/DriveIndexer/run.sh`.
 
-4. **Copy com.arthur.DriveIndexer.plist** to /LocalDrive/Library/LaunchAgents/com.arthur.DriveIndexer.plist
+5. **Copy com.arthur.DriveIndexer.plist** to /LocalDrive/Library/LaunchAgents/com.arthur.DriveIndexer.plist
 
    Copy `com.arthur.DriveIndexer.plist` to `/LocalDrive/Library/LaunchAgents/com.arthur.DriveIndexer.plist`
 
 By default DriveIndexer stores index files to a folder on the desktop in a folder called 'DriveIndexer'. To update to a custom directory update script.ts lines 9-14. Also update the route references in .zshrc.sample
 
-5. **Update .zshrc**
+6. **Update .zshrc**
 
    Run the following command in your terminal:
    `cd ~`
    `nano ~/.zshrc`
 
-6. Paste the contents of '.zshrc.sample' to the bottom of the file
+7. Paste the contents of '.zshrc.sample' to the bottom of the file
 
-7. Press `CMD + X` then `Y`, then `Enter`
+8. Press `CMD + X` then `Y`, then `Enter`
 
-8. Source `.zshrc`
+9. Source `.zshrc`
 
+   Run the following command in your terminal:
    Run the following command in your terminal:
    `source ~/.zshrc`
 
