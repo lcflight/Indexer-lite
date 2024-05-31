@@ -9,7 +9,7 @@ import os from "os";
 const INDEXED_DRIVES_FILE = path.join(
   os.homedir(),
   "Desktop",
-  "DriveIndexer",
+  "DriveIndexer.nosync",
   "indexed_drives.json"
 );
 
@@ -38,46 +38,56 @@ const saveIndexedDrives = (drives: IndexedDrives) => {
 
 let indexedDrives = loadIndexedDrives();
 
-const indexDrive = (drivePath: string) => {
+const indexDrive = async (drivePath: string) => {
   console.log("Indexing drive:", drivePath);
   const logFile = path.join(
     INDEXED_DRIVES_FILE + `${drivePath.replace(/\//g, "_")}_index.log`
   );
-  const writeStream = fs.createWriteStream(logFile);
+  const tempLogFile = logFile + ".tmp"; // Temporary log file
+  const writeStream = fs.createWriteStream(tempLogFile);
   let itemsProcessed = 0;
-  klaw(drivePath, {
-    filter: (item) => {
-      const isHidden = path.basename(item).startsWith(".");
-      return !isHidden;
-    },
-  })
-    .on("data", (item) => {
+  try {
+    for await (const item of klaw(drivePath, {
+      filter: (item) => {
+        const isHidden = path.basename(item).startsWith(".");
+        return !isHidden;
+      },
+    })) {
       if (!item.stats.isDirectory()) {
         writeStream.write(`${item.path}\n`);
         itemsProcessed++;
       }
-    })
-    .on("error", (err: Error & { code?: string }) => {
-      if (err.code !== "ENOENT") {
-        console.log(
-          `Error indexing drive: ${drivePath}. 'View detailed logs at script_error.log'`
-        );
-        console.error(err);
-      }
-    })
-    .on("end", () => {
+    }
+    console.log(
+      `Finished indexing drive: ${drivePath}, processed ${itemsProcessed} items`
+    );
+  } catch (err) {
+    if (
+      typeof err === "object" &&
+      err !== null &&
+      "code" in err &&
+      err.code !== "ENOENT"
+    ) {
       console.log(
-        `Finished indexing drive: ${drivePath}, processed ${itemsProcessed} items`
+        `Error indexing drive: ${drivePath}. 'View detailed logs at script_error.log'`
       );
+      console.error(err);
+    }
+  } finally {
+    writeStream.end(() => {
       if (itemsProcessed > 0) {
-        writeStream.end();
+        fs.renameSync(tempLogFile, logFile); // Replace the original log file with the temporary log file
+      }
+      if (fs.existsSync(tempLogFile)) {
+        fs.unlinkSync(tempLogFile); // Delete the temporary log file
       }
     });
+  }
 };
 
 const handleNewDrive = (drivePath: string) => {
-  // Only handle "/" directory and volumes
-  if (drivePath !== "/" && !drivePath.startsWith("/Volumes/")) {
+  // Only handle volumes
+  if (!drivePath.startsWith("/Volumes/")) {
     console.log("Ignoring drive:", drivePath);
     return;
   }
@@ -100,8 +110,12 @@ export function reindexDrives() {
   setInterval(() => {
     console.log("✅ Starting to reindex drives...");
     Object.keys(indexedDrives).forEach((drive) => {
-      console.log("Re-indexing drive:", drive);
-      indexDrive(drive);
+      if (connectedDrives[drive]) {
+        console.log("Re-indexing drive:", drive);
+        indexDrive(drive);
+      } else {
+        console.log("Drive not connected, skipping reindex:", drive);
+      }
     });
   }, 100000);
 }
@@ -125,10 +139,7 @@ export function monitorDrives() {
 
       // Check for new drives
       volumes.forEach((volume) => {
-        if (
-          !connectedDrives[volume] &&
-          (volume === "/" || volume.startsWith("/Volumes/"))
-        ) {
+        if (!connectedDrives[volume] && volume.startsWith("/Volumes/")) {
           console.log("New drive detected:", volume);
           connectedDrives[volume] = true;
           indexedDrives[volume] = true;

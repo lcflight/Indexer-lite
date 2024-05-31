@@ -10,6 +10,7 @@
     "stop": "pm2 stop script.ts",
     "kill": "pm2 kill",
     "write": "tsx writeIndex.ts",
+    "parse": "tsx parseIndex.ts",
     "build": "tsc"
   },
   "repository": {
