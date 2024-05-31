@@ -1,0 +1,7 @@
+indexer() {
+  if [ "$2" = true ]; then
+    find ~/Desktop/DriveIndexer -maxdepth 1 -type f -exec grep -il "$1" {} \; | awk -F'/' '{print $NF}'
+  else
+    grep -ri "$1" ~/Desktop/DriveIndexer | cut -d ':' -f 2-
+  fi
+}
