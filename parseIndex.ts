@@ -6,8 +6,8 @@ import { exec } from "child_process";
 import * as fs from "fs";
 import path from "path";
 
-async function indexer(keyword: string, vols?: string | undefined) {
-  if (vols !== "vols" && vols !== undefined) {
+async function indexer(keyword: string, option?: string | undefined) {
+  if (option !== "vols" && option !== "short" && option !== undefined) {
     console.log("Invalid argument");
     return;
   }
@@ -15,7 +15,7 @@ async function indexer(keyword: string, vols?: string | undefined) {
   const INDEXED_DRIVES_FILE = path.join(
     os.homedir(),
     "Desktop",
-    "DriveIndexer.nosync"
+    "DriveIndexer"
   );
 
   let rawData;
@@ -33,14 +33,19 @@ async function indexer(keyword: string, vols?: string | undefined) {
     return;
   }
 
-  if (!vols) {
+  if (!option) {
     // Split rawData into lines
     const lines = rawData.split("\n");
 
     // Extract directory paths and truncate at the folder containing the keyword
     const directories = lines.map((line) => {
       const index = line.toLowerCase().indexOf(keyword.toLowerCase());
-      return line.substring(0, index + keyword.length);
+      const nextSlash = line.indexOf("/", index + keyword.length);
+      const nextNewLine = line.indexOf("\n", index + keyword.length);
+      let cutIndex = nextSlash !== -1 ? nextSlash : nextNewLine;
+      if (cutIndex === -1) cutIndex = line.length;
+      else cutIndex++;
+      return line.substring(0, cutIndex);
     });
 
     // Group directories by volume
@@ -58,7 +63,41 @@ async function indexer(keyword: string, vols?: string | undefined) {
     console.log(volumes);
   }
 
-  if (vols === "vols") {
+  if (option === "short") {
+    // Split rawData into lines
+    const lines = rawData.split("\n");
+
+    // Extract directory paths and truncate at the volume name
+    const directories = lines.map((line) => {
+      const parts = line.split("/");
+      const volume = parts[2];
+      const index = line.toLowerCase().indexOf(keyword.toLowerCase());
+      const nextSlash = line.indexOf("/", index + keyword.length);
+      const nextNewLine = line.indexOf("\n", index + keyword.length);
+      let cutIndex = nextSlash !== -1 ? nextSlash : nextNewLine;
+      if (cutIndex === -1) cutIndex = line.length;
+      else cutIndex++;
+      return {
+        volume,
+        path: volume + "/.../" + line.substring(index, cutIndex),
+      };
+    });
+
+    // Group directories by volume
+    const volumes: { [key: string]: Set<string> } = {};
+    for (const dir of directories) {
+      const volume = dir.volume;
+      if (volume) {
+        if (!volumes[volume]) {
+          volumes[volume] = new Set();
+        }
+        volumes[volume].add(dir.path);
+      }
+    }
+    console.log(volumes);
+  }
+
+  if (option === "vols") {
     // Split rawData into lines
     const lines = rawData.split("\n");
 
